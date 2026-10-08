@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIF Share — Video to GIF Studio</title>
+
+    <!-- Open Graph & Social Unfurl Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Created with Video to GIF Studio">
+    <meta property="og:description" content="Check out this GIF! Convert and clip videos into high-quality GIFs online for free.">
+    <meta property="og:image" content="{{ request.host_url.rstrip('/') }}/api/download/{{ gif_filename }}">
+    <meta property="og:url" content="{{ request.url }}">
+
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Created with Video to GIF Studio">
+    <meta name="twitter:description" content="Check out this GIF! Convert and clip videos into high-quality GIFs online.">
+    <meta name="twitter:image" content="{{ request.host_url.rstrip('/') }}/api/download/{{ gif_filename }}">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        mono: {
+                            black: '#000000',
+                            card: '#0c0c0c',
+                            cardBorder: '#222222',
+                            input: '#141414',
+                            muted: '#737373',
+                            white: '#ffffff',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #000000; color: #ffffff; }
+        .mono-card { background: #0a0a0a; border: 1px solid #222222; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-white selection:text-black">
+
+    <!-- Header Bar -->
+    <header class="border-b border-mono-cardBorder bg-mono-black px-8 py-5 flex items-center justify-between">
+        <a href="/" class="flex items-center space-x-3 group">
+            <div class="w-7 h-7 bg-white text-black rounded-lg flex items-center justify-center font-bold text-sm tracking-tighter">
+                GIF
+            </div>
+            <h1 class="text-sm font-semibold tracking-wider uppercase text-white group-hover:text-neutral-300 transition-colors">
+                Video to GIF Studio
+            </h1>
+        </a>
+
+        <a href="/" class="bg-white hover:bg-neutral-200 text-black px-4 py-2 rounded-lg font-semibold text-xs tracking-wider uppercase transition-colors">
+            Create New GIF
+        </a>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-2xl w-full mx-auto px-6 py-12 flex flex-col justify-center items-center text-center">
+        
+        <div class="mono-card rounded-2xl p-6 w-full space-y-6 shadow-2xl">
+            
+            <div class="flex items-center justify-between border-b border-mono-cardBorder pb-3 text-xs">
+                <span class="text-mono-muted font-mono">ID: {{ gif_filename }}</span>
+                <span class="text-white font-mono bg-mono-cardBorder px-2.5 py-0.5 rounded">Shared GIF</span>
+            </div>
+
+            <!-- GIF Display -->
+            <div class="bg-black p-3 rounded-xl border border-mono-cardBorder flex items-center justify-center max-h-[480px] overflow-hidden">
+                <img src="/api/download/{{ gif_filename }}" alt="Shared GIF" class="max-h-[440px] max-w-full rounded object-contain">
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <button id="btnCopyPageLink" class="bg-white hover:bg-neutral-200 text-black font-semibold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-colors flex items-center justify-center space-x-2">
+                    <span>📋 Copy Share Link</span>
+                </button>
+
+                <button id="btnCopyDirectGif" class="bg-mono-card hover:bg-mono-cardBorder text-white border border-mono-cardBorder font-semibold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-colors flex items-center justify-center space-x-2">
+                    <span>🔗 Copy GIF Link</span>
+                </button>
+
+                <a href="/api/download/{{ gif_filename }}" download class="bg-mono-card hover:bg-mono-cardBorder text-white border border-mono-cardBorder font-semibold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-colors flex items-center justify-center space-x-2">
+                    <span>⬇ Download</span>
+                </a>
+            </div>
+
+            <div id="toast" class="hidden text-xs text-emerald-400 font-mono pt-1">
+                Link copied to clipboard!
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-mono-cardBorder py-6 text-center text-xs text-mono-muted">
+        <p>Convert videos to high-quality GIFs online for free.</p>
+    </footer>
+
+    <script>
+        const toast = document.getElementById('toast');
+
+        function showToast(text) {
+            toast.innerText = text;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2500);
+        }
+
+        document.getElementById('btnCopyPageLink').addEventListener('click', () => {
+            navigator.clipboard.writeText(window.location.href);
+            showToast('✓ Share link copied! Ready to paste into Discord/Slack/WhatsApp');
+        });
+
+        document.getElementById('btnCopyDirectGif').addEventListener('click', () => {
+            const gifUrl = `${window.location.origin}/api/download/{{ gif_filename }}`;
+            navigator.clipboard.writeText(gifUrl);
+            showToast('✓ Direct GIF link copied!');
+        });
+    </script>
+</body>
+</html>

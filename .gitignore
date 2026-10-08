@@ -1,0 +1,9 @@
+uploads/
+outputs/
+__pycache__/
+*.pyc
+*.gif
+*.mp4
+!sample_test.mp4
+.env
+.venv/

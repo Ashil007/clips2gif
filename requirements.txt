@@ -1,0 +1,8 @@
+customtkinter>=6.0.0
+opencv-python>=4.8.0
+pillow>=10.0.0
+imageio>=2.30.0
+imageio-ffmpeg>=0.4.8
+flask>=3.0.0
+flask-cors>=4.0.0
+gunicorn>=21.0.0

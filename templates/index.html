@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video to GIF Studio — Minimalist Edition</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        mono: {
+                            black: '#000000',
+                            card: '#0c0c0c',
+                            cardBorder: '#222222',
+                            input: '#141414',
+                            hover: '#1a1a1a',
+                            muted: '#737373',
+                            subtle: '#404040',
+                            white: '#ffffff',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"Inter"', 'Helvetica', 'Arial', 'sans-serif'],
+                        mono: ['"SF Mono"', '"JetBrains Mono"', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #000000; color: #ffffff; }
+        .mono-card { background: #0a0a0a; border: 1px solid #222222; }
+        .mono-card-subtle { background: #111111; border: 1px solid #262626; }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            background: #262626;
+            border-radius: 999px;
+            height: 4px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #000000;
+            box-shadow: 0 0 0 1px #ffffff;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+        .meme-caption {
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            text-transform: uppercase;
+            color: white;
+            text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+            letter-spacing: 1px;
+            pointer-events: auto;
+            cursor: ns-resize;
+            user-select: none;
+            z-index: 30;
+            min-height: 28px;
+        }
+
+        /* Live Quality Simulation Classes */
+        .quality-sim-1 {
+            image-rendering: pixelated;
+            filter: contrast(1.15) brightness(1.05);
+            transform: scale(0.96);
+        }
+        .quality-sim-2 {
+            image-rendering: pixelated;
+            filter: contrast(1.08);
+            transform: scale(0.98);
+        }
+        .quality-sim-3 {
+            image-rendering: auto;
+            filter: none;
+            transform: scale(1.0);
+        }
+        .quality-sim-4 {
+            image-rendering: high-quality;
+            filter: contrast(1.02);
+            transform: scale(1.0);
+        }
+        .quality-sim-5 {
+            image-rendering: high-quality;
+            filter: none;
+            transform: scale(1.0);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000000; }
+        ::-webkit-scrollbar-thumb { background: #333333; border-radius: 999px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-white selection:text-black">
+
+    <!-- Header Bar -->
+    <header class="border-b border-mono-cardBorder bg-mono-black px-8 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-7 h-7 bg-white text-black rounded-lg flex items-center justify-center font-bold text-sm tracking-tighter">
+                GIF
+            </div>
+            <h1 class="text-sm font-semibold tracking-wider uppercase text-white">Video to GIF Studio</h1>
+        </div>
+
+        <div class="flex items-center space-x-3 text-xs text-mono-muted font-mono">
+            <span>Shortcuts: <kbd class="bg-mono-cardBorder text-white px-1.5 py-0.5 rounded">Space</kbd> Play/Pause</span>
+            <span><kbd class="bg-mono-cardBorder text-white px-1.5 py-0.5 rounded">[</kbd> In-Point</span>
+            <span><kbd class="bg-mono-cardBorder text-white px-1.5 py-0.5 rounded">]</kbd> Out-Point</span>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-6 py-8 flex flex-col justify-center">
+
+        <!-- UPLOAD SECTION -->
+        <div id="uploadSection" class="max-w-lg mx-auto w-full">
+            <div id="dropZone" class="mono-card rounded-2xl p-10 text-center border-dashed border-mono-cardBorder hover:border-white transition-all duration-200 cursor-pointer group">
+                <input type="file" id="videoFileInput" class="hidden" accept="video/*">
+                
+                <div class="w-16 h-16 rounded-xl bg-mono-input text-white flex items-center justify-center mx-auto mb-5 group-hover:scale-105 transition-transform duration-200 border border-mono-cardBorder">
+                    <svg class="w-8 h-8 stroke-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                    </svg>
+                </div>
+                
+                <h2 class="text-lg font-medium text-white tracking-tight mb-1">Select Video File</h2>
+                <p class="text-xs text-mono-muted mb-6">Drag & drop MP4, MOV, AVI, or WEBM (Max 100MB)</p>
+                
+                <div class="flex items-center justify-center space-x-3">
+                    <button onclick="document.getElementById('videoFileInput').click()" class="bg-white hover:bg-neutral-200 text-black px-6 py-2.5 rounded-lg font-medium text-xs tracking-wide transition-colors">
+                        Browse Files
+                    </button>
+                    <button id="btnTrySample" class="bg-mono-card hover:bg-mono-cardBorder text-white border border-mono-cardBorder px-5 py-2.5 rounded-lg font-medium text-xs tracking-wide transition-colors">
+                        ✨ Try Sample Video
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- EDITOR WORKSPACE -->
+        <div id="editorSection" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- LEFT COLUMN: VIDEO PLAYER WITH LIVE DEMO PREVIEW -->
+            <div class="lg:col-span-7 flex flex-col space-y-4">
+                
+                <div class="mono-card rounded-2xl p-5 flex flex-col justify-between">
+                    
+                    <div class="flex items-center justify-between pb-3 border-b border-mono-cardBorder text-xs">
+                        <span id="lblFileName" class="font-medium text-white truncate max-w-xs">video.mp4</span>
+                        <span id="lblMeta" class="font-mono text-mono-muted">00:00 | 1920x1080</span>
+                    </div>
+
+                    <!-- Video Viewport with Live Quality Simulation Badge & Captions -->
+                    <div class="relative bg-mono-black rounded-xl overflow-hidden my-4 aspect-video flex items-center justify-center border border-mono-cardBorder">
+                        
+                        <!-- Live Quality Demo Badge -->
+                        <div id="lblLiveDemoBadge" class="absolute top-3 left-3 bg-mono-black/90 border border-mono-cardBorder text-[11px] font-mono px-2.5 py-1 rounded-md z-20 flex items-center space-x-2 text-white shadow">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span id="lblLiveDemoText">Live Quality Preview: Level 3 (Balanced)</span>
+                        </div>
+
+                        <video id="videoPlayer" class="max-h-full max-w-full rounded-lg transition-all duration-300 quality-sim-3" autoplay loop muted playsinline></video>
+
+                        <div id="liveOverlayTop" class="absolute top-10 left-0 right-0 text-center text-xl sm:text-2xl font-bold meme-caption px-4"></div>
+                        <div id="liveOverlayBottom" class="absolute bottom-4 left-0 right-0 text-center text-xl sm:text-2xl font-bold meme-caption px-4"></div>
+                    </div>
+
+                    <div class="space-y-3 bg-mono-card-subtle p-4 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <input type="range" id="videoScrubber" min="0" max="100" step="0.1" value="0" class="w-full">
+                            <span id="lblTime" class="font-mono text-xs text-white font-medium whitespace-nowrap bg-mono-black px-2.5 py-1 rounded border border-mono-cardBorder">
+                                00:00.00 / 00:00.00
+                            </span>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <div class="flex items-center space-x-2">
+                                <button id="btnPrevFrame" class="bg-mono-card hover:bg-mono-hover text-white border border-mono-cardBorder px-3 py-1.5 rounded-lg text-xs font-medium">Step Prev</button>
+                                <button id="btnPlayPause" class="bg-white hover:bg-neutral-200 text-black px-5 py-1.5 rounded-lg font-semibold text-xs flex items-center space-x-1.5"><span id="playIcon">▶</span> <span id="playText">Play</span></button>
+                                <button id="btnNextFrame" class="bg-mono-card hover:bg-mono-hover text-white border border-mono-cardBorder px-3 py-1.5 rounded-lg text-xs font-medium">Step Next</button>
+                            </div>
+
+                            <button id="btnChangeVideo" class="text-xs text-mono-muted hover:text-white transition-colors">Replace File</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: CAPTIONS, TRIM, RANGE PROFILES & EXPORT -->
+            <div class="lg:col-span-5 flex flex-col space-y-4 max-h-[80vh] overflow-y-auto pr-1">
+                
+                <!-- SIZE RANGE PROFILES (MINIMAL MB <---> MOST MB POSSIBLE) -->
+                <div class="mono-card rounded-2xl p-5 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-mono-muted">Size / Quality Range</h3>
+                        <span id="lblRangeLevelName" class="text-xs font-mono font-semibold text-white bg-mono-card-subtle px-2.5 py-0.5 rounded border border-mono-cardBorder">
+                            Level 3: Balanced
+                        </span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-[11px] font-mono text-mono-muted">
+                            <span>Smallest MB (Level 1)</span>
+                            <span>Highest Quality (Level 5)</span>
+                        </div>
+                        <input type="range" id="sliderProfileRange" min="1" max="5" step="1" value="3" class="w-full">
+                    </div>
+
+                    <div id="boxProfileDetails" class="bg-mono-black p-3 rounded-xl border border-mono-cardBorder text-xs space-y-1 font-mono text-mono-muted">
+                        <div class="flex justify-between"><span>Preset Target:</span> <span id="lblProfDesc" class="text-white font-semibold">Balanced (Medium MB)</span></div>
+                        <div class="flex justify-between"><span>Specs:</span> <span id="lblProfSpecs" class="text-mono-muted">480px, 15 FPS, 192 Colors</span></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btnPresetSmallest" class="bg-mono-card hover:bg-mono-hover text-white border border-mono-cardBorder text-xs py-2 rounded-lg font-mono">
+                            ⚡ Smallest MB (L1)
+                        </button>
+                        <button id="btnPresetHighest" class="bg-mono-card hover:bg-mono-hover text-white border border-mono-cardBorder text-xs py-2 rounded-lg font-mono">
+                            💎 Max Quality (L5)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CAPTIONS PANEL -->
+                <div class="mono-card rounded-2xl p-5 space-y-3">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-mono-muted">Meme Captions</h3>
+                    <div class="space-y-2">
+                        <input type="text" id="inputCaptionTop" placeholder="TOP TEXT (e.g. WHEN IT FINALLY WORKS)" class="w-full bg-mono-black border border-mono-cardBorder rounded-lg px-3 py-2 text-xs font-mono text-white placeholder-mono-muted uppercase focus:outline-none focus:border-white">
+                        <input type="text" id="inputCaptionBottom" placeholder="BOTTOM TEXT (e.g. SHIP IT TO PRODUCTION)" class="w-full bg-mono-black border border-mono-cardBorder rounded-lg px-3 py-2 text-xs font-mono text-white placeholder-mono-muted uppercase focus:outline-none focus:border-white">
+                    </div>
+                </div>
+
+                <!-- TRIM PANEL -->
+                <div class="mono-card rounded-2xl p-5 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-mono-muted">Clip Trimmer</h3>
+                        <span id="lblTrimDuration" class="text-xs font-mono text-white bg-mono-card-subtle px-2.5 py-0.5 rounded border border-mono-cardBorder">0.00s</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btnSetStart" class="bg-mono-card hover:bg-mono-hover text-white border border-mono-cardBorder text-xs py-2 rounded-lg font-medium">Set In-Point <kbd class="text-[10px] text-mono-muted">[</kbd></button>
+                        <button id="btnSetEnd" class="bg-mono-card hover:bg-mono-hover text-white border border-mono-cardBorder text-xs py-2 rounded-lg font-medium">Set Out-Point <kbd class="text-[10px] text-mono-muted">]</kbd></button>
+                    </div>
+
+                    <div class="space-y-1 pt-1">
+                        <div class="flex justify-between text-xs text-mono-muted"><span>Start Marker</span><span id="lblStartTimeVal" class="font-mono text-white">0.00s</span></div>
+                        <div class="flex items-center space-x-3">
+                            <input type="range" id="sliderStart" min="0" max="100" step="0.05" value="0" class="w-full">
+                            <input type="number" id="inputStart" min="0" step="0.1" value="0.00" class="w-20 bg-mono-black border border-mono-cardBorder rounded px-2 py-1 text-xs font-mono text-center text-white">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs text-mono-muted"><span>End Marker</span><span id="lblEndTimeVal" class="font-mono text-white">0.00s</span></div>
+                        <div class="flex items-center space-x-3">
+                            <input type="range" id="sliderEnd" min="0" max="100" step="0.05" value="0" class="w-full">
+                            <input type="number" id="inputEnd" min="0" step="0.1" value="0.00" class="w-20 bg-mono-black border border-mono-cardBorder rounded px-2 py-1 text-xs font-mono text-center text-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SPEED & LOOP EFFECTS -->
+                <div class="mono-card rounded-2xl p-5 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-mono-muted">Speed & Loop Effects</h3>
+                        <span id="lblEffectiveDuration" class="text-xs font-mono text-mono-muted">0.00s GIF</span>
+                    </div>
+
+                    <div class="bg-mono-black p-1 rounded-xl border border-mono-cardBorder grid grid-cols-6 gap-1">
+                        <button class="spd-btn text-xs py-1.5 rounded-lg font-mono transition-all text-mono-muted hover:text-white" data-speed="0.5">0.5x</button>
+                        <button class="spd-btn text-xs py-1.5 rounded-lg font-mono transition-all text-mono-muted hover:text-white" data-speed="0.75">0.75x</button>
+                        <button class="spd-btn text-xs py-1.5 rounded-lg font-mono transition-all bg-white text-black font-semibold shadow" data-speed="1.0">1.0x</button>
+                        <button class="spd-btn text-xs py-1.5 rounded-lg font-mono transition-all text-mono-muted hover:text-white" data-speed="1.25">1.25x</button>
+                        <button class="spd-btn text-xs py-1.5 rounded-lg font-mono transition-all text-mono-muted hover:text-white" data-speed="1.5">1.5x</button>
+                        <button class="spd-btn text-xs py-1.5 rounded-lg font-mono transition-all text-mono-muted hover:text-white" data-speed="2.0">2.0x</button>
+                    </div>
+
+                    <div class="flex items-center space-x-3 pt-1">
+                        <input type="range" id="sliderSpeed" min="0.25" max="4.0" step="0.05" value="1.0" class="w-full">
+                        <span id="lblSpeedVal" class="font-mono text-xs font-bold text-white w-12 text-right">1.00x</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <label class="flex items-center space-x-2 cursor-pointer bg-mono-card-subtle p-2 rounded-lg border border-mono-cardBorder">
+                            <input type="checkbox" id="chkBoomerang" class="rounded accent-white">
+                            <span>🪃 Boomerang Loop</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer bg-mono-card-subtle p-2 rounded-lg border border-mono-cardBorder">
+                            <input type="checkbox" id="chkReverse" class="rounded accent-white">
+                            <span>⏮ Reverse Playback</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- OUTPUT & FORMAT -->
+                <div class="mono-card rounded-2xl p-5 space-y-4">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-mono-muted">Format & Export</h3>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-mono-muted mb-1">Format:</label>
+                            <select id="selectFormat" class="w-full bg-mono-black border border-mono-cardBorder rounded-lg px-3 py-2 text-xs font-medium text-white focus:outline-none focus:border-white">
+                                <option value="gif" selected>GIF (Universal)</option>
+                                <option value="webp">WebP (5x Smaller)</option>
+                                <option value="mp4">MP4 (Video Loop)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-mono-muted mb-1">Target Size Cap (Optional):</label>
+                            <input type="number" id="inputTargetMb" step="0.5" placeholder="e.g. 5.0 MB" class="w-full bg-mono-black border border-mono-cardBorder rounded-lg px-3 py-2 text-xs font-mono text-white placeholder-mono-muted focus:outline-none focus:border-white">
+                        </div>
+                    </div>
+
+                    <button id="btnConvert" class="w-full bg-white hover:bg-neutral-200 text-black font-semibold py-3.5 px-6 rounded-xl text-xs tracking-wider uppercase transition-colors flex items-center justify-center space-x-2">
+                        <span>Render & Export</span>
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- RESULT MODAL -->
+    <div id="resultModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
+        <div class="mono-card rounded-2xl max-w-md w-full p-6 text-center space-y-5">
+            
+            <div id="modalLoadingState" class="space-y-4 py-4">
+                <div class="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto"></div>
+                <h3 class="text-sm font-semibold text-white tracking-wide uppercase">Generating Export</h3>
+                <p class="text-xs text-mono-muted">Applying LZW optimization algorithms</p>
+            </div>
+
+            <div id="modalSuccessState" class="hidden space-y-4">
+                <div>
+                    <h3 class="text-sm font-semibold uppercase text-white tracking-wide mb-1">Export Ready!</h3>
+                    <p id="lblResultSize" class="text-xs font-mono text-mono-muted">Size: 0.0 MB</p>
+                    <p id="lblResultProfile" class="text-[11px] font-mono text-white/70">Level 3: Balanced</p>
+                </div>
+
+                <div class="bg-black p-2 rounded-xl border border-mono-cardBorder max-h-60 overflow-hidden flex items-center justify-center">
+                    <img id="imgGifResult" class="max-h-52 max-w-full rounded object-contain" src="" alt="Export Result">
+                </div>
+
+                <div class="space-y-2 pt-1">
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btnCopyShareLink" class="bg-white hover:bg-neutral-200 text-black font-semibold py-2.5 px-3 rounded-lg text-xs tracking-wide uppercase transition-colors">
+                            📋 Copy Share Link
+                        </button>
+                        <a id="btnDownloadGif" href="#" download class="bg-mono-card hover:bg-mono-hover text-white border border-mono-cardBorder py-2.5 px-3 rounded-lg font-semibold text-xs tracking-wide uppercase text-center block">
+                            ⬇ Download
+                        </a>
+                    </div>
+
+                    <button onclick="document.getElementById('resultModal').classList.add('hidden')" class="w-full text-xs text-mono-muted hover:text-white py-1">
+                        Close
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT CONTROLLER LOGIC -->
+    <script>
+        let currentVideoId = null;
+        let videoDuration = 0;
+        let videoFps = 25;
+        let startTime = 0;
+        let endTime = 0;
+        let playbackSpeed = 1.0;
+        let currentShareUrl = "";
+
+        const video = document.getElementById('videoPlayer');
+        const scrubber = document.getElementById('videoScrubber');
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('videoFileInput');
+
+        const PROFILES_INFO = {
+            1: { name: "Smallest File Size (Minimal MB)", specs: "320px, 10 FPS, 64 Colors, No Dither" },
+            2: { name: "Compact (Low MB)", specs: "360px, 12 FPS, 128 Colors, Bayer Dither" },
+            3: { name: "Balanced (Medium MB)", specs: "480px, 15 FPS, 192 Colors, Bayer Dither" },
+            4: { name: "High Quality (Large MB)", specs: "640px, 20 FPS, 256 Colors, Sierra Dither" },
+            5: { name: "Maximum Quality (Highest MB)", specs: "Original Width, 24 FPS, 256 Colors" }
+        };
+
+        const sliderProfile = document.getElementById('sliderProfileRange');
+        sliderProfile.addEventListener('input', (e) => {
+            updateProfileInfo(parseInt(e.target.value));
+        });
+
+        document.getElementById('btnPresetSmallest').addEventListener('click', () => {
+            sliderProfile.value = 1;
+            updateProfileInfo(1);
+        });
+
+        document.getElementById('btnPresetHighest').addEventListener('click', () => {
+            sliderProfile.value = 5;
+            updateProfileInfo(5);
+        });
+
+        function updateProfileInfo(level) {
+            const p = PROFILES_INFO[level];
+            document.getElementById('lblRangeLevelName').innerText = `Level ${level}: ${p.name.split(' ')[0]}`;
+            document.getElementById('lblProfDesc').innerText = p.name;
+            document.getElementById('lblProfSpecs').innerText = p.specs;
+
+            // Live Quality Demo Simulation on Left Player Viewport
+            video.className = "max-h-full max-w-full rounded-lg transition-all duration-300 quality-sim-" + level;
+            document.getElementById('lblLiveDemoText').innerText = `Live Quality Preview: Level ${level} (${p.name.split(' ')[0]} - ${p.specs.split(',')[0]})`;
+        }
+
+        ['dragenter', 'dragover'].forEach(name => {
+            dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.add('border-white'); });
+        });
+        ['dragleave', 'drop'].forEach(name => {
+            dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.remove('border-white'); });
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files.length > 0) handleFileUpload(e.dataTransfer.files[0]);
+        });
+        dropZone.addEventListener('click', (e) => {
+            if (e.target.closest('#btnTrySample')) return;
+            fileInput.click();
+        });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFileUpload(e.target.files[0]);
+        });
+
+        document.getElementById('btnTrySample').addEventListener('click', () => {
+            fetch('/api/sample', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => loadEditor(data))
+                .catch(err => alert('Sample Error: ' + err.message));
+        });
+
+        function handleFileUpload(file) {
+            if (file.size > 100 * 1024 * 1024) {
+                alert('File size exceeds 100MB limit.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('video', file);
+
+            dropZone.innerHTML = `
+                <div class="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-3"></div>
+                <p class="text-xs text-mono-muted font-mono">Uploading video...</p>
+            `;
+
+            fetch('/api/upload', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) throw new Error(data.error);
+                    loadEditor(data);
+                })
+                .catch(err => {
+                    alert('Upload Error: ' + err.message);
+                    location.reload();
+                });
+        }
+
+        function loadEditor(data) {
+            currentVideoId = data.video_id;
+            videoDuration = data.duration;
+            videoFps = data.fps || 25;
+            startTime = 0;
+            endTime = videoDuration;
+
+            document.getElementById('uploadSection').classList.add('hidden');
+            document.getElementById('editorSection').classList.remove('hidden');
+
+            document.getElementById('lblFileName').innerText = data.filename;
+            document.getElementById('lblMeta').innerText = `${data.width}x${data.height} | ${data.fps.toFixed(1)} FPS`;
+
+            video.muted = true;
+            video.src = `/api/video/${data.video_id}`;
+            video.play().catch(e => console.log('Autoplay:', e));
+
+            const slStart = document.getElementById('sliderStart');
+            const slEnd = document.getElementById('sliderEnd');
+
+            slStart.max = videoDuration;
+            slStart.value = 0;
+            slEnd.max = videoDuration;
+            slEnd.value = videoDuration;
+
+            document.getElementById('inputStart').value = "0.00";
+            document.getElementById('inputEnd').value = videoDuration.toFixed(2);
+
+            scrubber.max = videoDuration;
+
+            updateDurations();
+            updateProfileInfo(parseInt(sliderProfile.value));
+        }
+
+        let captionTopY = 0.08;
+        let captionBottomY = 0.82;
+
+        const inputCapTop = document.getElementById('inputCaptionTop');
+        const inputCapBottom = document.getElementById('inputCaptionBottom');
+        const overlayTop = document.getElementById('liveOverlayTop');
+        const overlayBottom = document.getElementById('liveOverlayBottom');
+
+        inputCapTop.addEventListener('input', (e) => { overlayTop.innerText = e.target.value.toUpperCase(); });
+        inputCapBottom.addEventListener('input', (e) => { overlayBottom.innerText = e.target.value.toUpperCase(); });
+
+        function setupDraggableCaption(element, isTop) {
+            let isDragging = false;
+            
+            element.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                element.style.cursor = 'grabbing';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const container = video.parentElement;
+                const rect = container.getBoundingClientRect();
+                let relativeY = (e.clientY - rect.top) / rect.height;
+                relativeY = Math.max(0.02, Math.min(0.88, relativeY));
+                
+                element.style.top = (relativeY * 100) + '%';
+                element.style.bottom = 'auto';
+
+                if (isTop) {
+                    captionTopY = relativeY;
+                } else {
+                    captionBottomY = relativeY;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    element.style.cursor = 'ns-resize';
+                }
+            });
+
+            element.addEventListener('touchstart', (e) => {
+                isDragging = true;
+            }, { passive: true });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging || !e.touches[0]) return;
+                const container = video.parentElement;
+                const rect = container.getBoundingClientRect();
+                let relativeY = (e.touches[0].clientY - rect.top) / rect.height;
+                relativeY = Math.max(0.02, Math.min(0.88, relativeY));
+                
+                element.style.top = (relativeY * 100) + '%';
+                element.style.bottom = 'auto';
+
+                if (isTop) {
+                    captionTopY = relativeY;
+                } else {
+                    captionBottomY = relativeY;
+                }
+            }, { passive: true });
+
+            document.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+        }
+
+        setupDraggableCaption(overlayTop, true);
+        setupDraggableCaption(overlayBottom, false);
+
+        document.addEventListener('keydown', (e) => {
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlay();
+            } else if (e.key === '[') {
+                setStartPoint();
+            } else if (e.key === ']') {
+                setEndPoint();
+            } else if (e.code === 'ArrowLeft') {
+                video.pause();
+                video.currentTime = Math.max(0, video.currentTime - (1 / videoFps));
+            } else if (e.code === 'ArrowRight') {
+                video.pause();
+                video.currentTime = Math.min(videoDuration, video.currentTime + (1 / videoFps));
+            }
+        });
+
+        video.addEventListener('timeupdate', () => {
+            if (video.currentTime >= endTime || video.currentTime < startTime) {
+                video.currentTime = startTime;
+                if (video.paused) video.play();
+            }
+            scrubber.value = video.currentTime;
+            document.getElementById('lblTime').innerText = `${formatTime(video.currentTime)} / ${formatTime(videoDuration)}`;
+        });
+
+        video.addEventListener('ended', () => {
+            video.currentTime = startTime;
+            video.play();
+        });
+
+        scrubber.addEventListener('input', (e) => {
+            video.currentTime = parseFloat(e.target.value);
+        });
+
+        function togglePlay() {
+            if (video.paused) {
+                if (video.currentTime >= endTime || video.currentTime < startTime) {
+                    video.currentTime = startTime;
+                }
+                video.play();
+                document.getElementById('playIcon').innerText = '⏸';
+                document.getElementById('playText').innerText = 'Pause';
+            } else {
+                video.pause();
+                document.getElementById('playIcon').innerText = '▶';
+                document.getElementById('playText').innerText = 'Play';
+            }
+        }
+        document.getElementById('btnPlayPause').addEventListener('click', togglePlay);
+
+        document.getElementById('btnPrevFrame').addEventListener('click', () => {
+            video.pause();
+            video.currentTime = Math.max(0, video.currentTime - (1 / videoFps));
+        });
+        document.getElementById('btnNextFrame').addEventListener('click', () => {
+            video.pause();
+            video.currentTime = Math.min(videoDuration, video.currentTime + (1 / videoFps));
+        });
+
+        function setStartPoint() {
+            startTime = Math.min(video.currentTime, endTime - 0.1);
+            document.getElementById('sliderStart').value = startTime;
+            document.getElementById('inputStart').value = startTime.toFixed(2);
+            updateDurations();
+        }
+        function setEndPoint() {
+            endTime = Math.max(video.currentTime, startTime + 0.1);
+            document.getElementById('sliderEnd').value = endTime;
+            document.getElementById('inputEnd').value = endTime.toFixed(2);
+            updateDurations();
+        }
+        document.getElementById('btnSetStart').addEventListener('click', setStartPoint);
+        document.getElementById('btnSetEnd').addEventListener('click', setEndPoint);
+
+        document.getElementById('sliderStart').addEventListener('input', (e) => {
+            let val = parseFloat(e.target.value);
+            if (val >= endTime) val = endTime - 0.1;
+            startTime = val;
+            document.getElementById('inputStart').value = val.toFixed(2);
+            if (video.currentTime < startTime) video.currentTime = startTime;
+            updateDurations();
+        });
+
+        document.getElementById('sliderEnd').addEventListener('input', (e) => {
+            let val = parseFloat(e.target.value);
+            if (val <= startTime) val = startTime + 0.1;
+            endTime = val;
+            document.getElementById('inputEnd').value = val.toFixed(2);
+            if (video.currentTime >= endTime) video.currentTime = startTime;
+            updateDurations();
+        });
+
+        const sliderSpeed = document.getElementById('sliderSpeed');
+        sliderSpeed.addEventListener('input', (e) => { setSpeed(parseFloat(e.target.value)); });
+
+        document.querySelectorAll('.spd-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.spd-btn').forEach(b => {
+                    b.classList.remove('bg-white', 'text-black', 'font-semibold', 'shadow');
+                    b.classList.add('text-mono-muted', 'hover:text-white');
+                });
+                btn.classList.remove('text-mono-muted', 'hover:text-white');
+                btn.classList.add('bg-white', 'text-black', 'font-semibold', 'shadow');
+                setSpeed(parseFloat(btn.dataset.speed));
+            });
+        });
+
+        function setSpeed(spd) {
+            playbackSpeed = spd;
+            video.playbackRate = spd;
+            sliderSpeed.value = spd;
+            document.getElementById('lblSpeedVal').innerText = `${spd.toFixed(2)}x`;
+            updateDurations();
+        }
+
+        function updateDurations() {
+            const trimLen = Math.max(0, endTime - startTime);
+            document.getElementById('lblStartTimeVal').innerText = `${startTime.toFixed(2)}s`;
+            document.getElementById('lblEndTimeVal').innerText = `${endTime.toFixed(2)}s`;
+            document.getElementById('lblTrimDuration').innerText = `${trimLen.toFixed(2)}s`;
+
+            const effLen = playbackSpeed > 0 ? trimLen / playbackSpeed : 0;
+            document.getElementById('lblEffectiveDuration').innerText = `${effLen.toFixed(2)}s GIF`;
+        }
+
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60);
+            const s = (sec % 60).toFixed(2);
+            return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        document.getElementById('btnChangeVideo').addEventListener('click', () => { location.reload(); });
+
+        document.getElementById('btnConvert').addEventListener('click', () => {
+            if (!currentVideoId) return;
+
+            const modal = document.getElementById('resultModal');
+            const loadingState = document.getElementById('modalLoadingState');
+            const successState = document.getElementById('modalSuccessState');
+
+            modal.classList.remove('hidden');
+            loadingState.classList.remove('hidden');
+            successState.classList.add('hidden');
+
+            const payload = {
+                video_id: currentVideoId,
+                start_time: startTime,
+                end_time: endTime,
+                speed: playbackSpeed,
+                caption_top: inputCapTop.value,
+                caption_bottom: inputCapBottom.value,
+                caption_top_y: captionTopY,
+                caption_bottom_y: captionBottomY,
+                boomerang: document.getElementById('chkBoomerang').checked,
+                reverse: document.getElementById('chkReverse').checked,
+                output_format: document.getElementById('selectFormat').value,
+                profile_level: parseInt(sliderProfile.value),
+                target_mb: parseFloat(document.getElementById('inputTargetMb').value) || 0.0,
+                quality: 'Ultra'
+            };
+
+            fetch('/api/convert', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) throw new Error(data.error);
+
+                loadingState.classList.add('hidden');
+                successState.classList.remove('hidden');
+
+                document.getElementById('imgGifResult').src = data.gif_url;
+                document.getElementById('lblResultSize').innerText = `Size: ${data.size_mb} MB (${payload.output_format.toUpperCase()})`;
+                document.getElementById('lblResultProfile').innerText = `${data.profile_name}`;
+                document.getElementById('btnDownloadGif').href = data.gif_url;
+                
+                currentShareUrl = `${window.location.origin}${data.share_url}`;
+            })
+            .catch(err => {
+                alert('Conversion Error: ' + err.message);
+                modal.classList.add('hidden');
+            });
+        });
+
+        document.getElementById('btnCopyShareLink').addEventListener('click', () => {
+            if (currentShareUrl) {
+                navigator.clipboard.writeText(currentShareUrl);
+                alert('✓ Share Link copied! Paste into Discord/Slack/WhatsApp to see the unfurl GIF preview.');
+            }
+        });
+    </script>
+</body>
+</html>
