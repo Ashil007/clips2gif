@@ -47,6 +47,31 @@ def auto_cleanup():
 def index():
     return render_template("index.html")
 
+@app.route("/robots.txt")
+def robots_txt():
+    return send_from_directory("static", "robots.txt")
+
+@app.route("/sitemap.xml")
+def sitemap_xml():
+    return send_from_directory("static", "sitemap.xml")
+
+@app.route("/llms.txt")
+def llms_txt():
+    return send_from_directory("static", "llms.txt")
+
+@app.route("/og-image.png")
+def og_image():
+    return send_from_directory("static", "og-image.png")
+
+@app.route("/mp4-to-gif")
+@app.route("/mov-to-gif")
+@app.route("/webm-to-gif")
+@app.route("/compress-gif")
+@app.route("/reverse-gif")
+@app.route("/add-text-to-gif")
+def landing_pages():
+    return render_template("index.html")
+
 @app.route("/g/<gif_filename>")
 def share_page(gif_filename):
     gif_path = os.path.join(OUTPUT_FOLDER, gif_filename)

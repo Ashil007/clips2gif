@@ -1,9 +1,82 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video to GIF Studio — Minimalist Edition</title>
+    <title>Video to GIF Converter – Free Online MP4, MOV, WEBM to GIF</title>
+    <meta name="description" content="Convert MP4, MOV, AVI and WEBM videos to GIF online. Trim clips, add meme captions, change speed, and export as GIF, WebP or MP4 with a target file size.">
+    <link rel="canonical" href="https://clips2gif.onrender.com/">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Video to GIF Converter – Free Online">
+    <meta property="og:description" content="Trim, caption and convert video to GIF, WebP or MP4. Choose quality level or set a max file size.">
+    <meta property="og:url" content="https://clips2gif.onrender.com/">
+    <meta property="og:image" content="https://clips2gif.onrender.com/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "@id": "https://clips2gif.onrender.com/#app",
+          "name": "Video to GIF Studio",
+          "url": "https://clips2gif.onrender.com/",
+          "applicationCategory": "MultimediaApplication",
+          "operatingSystem": "Any (web browser)",
+          "browserRequirements": "Requires JavaScript",
+          "description": "Online tool that converts MP4, MOV, AVI and WEBM video files into GIF, WebP or MP4 loops, with trimming, captions, speed control and file size targeting.",
+          "featureList": [
+            "Convert MP4, MOV, AVI, WEBM to GIF",
+            "Export as GIF, WebP or MP4 loop",
+            "Clip trimmer with in/out points",
+            "Meme captions",
+            "Speed control from 0.5x to 2.0x",
+            "Boomerang and reverse effects",
+            "5 quality levels and optional target size cap"
+          ],
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How do I convert a video to a GIF?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Upload an MP4, MOV, AVI or WEBM file (up to 100MB), set the in and out points to trim your clip, choose a quality level, then click Render & Export and download your GIF." }
+            },
+            {
+              "@type": "Question",
+              "name": "What video formats can I convert to GIF?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Video to GIF Studio accepts MP4, MOV, AVI and WEBM files up to 100MB." }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I make a GIF file smaller?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Lower the quality level (Level 1 is smallest), shorten the clip with the trimmer, or set a target size cap. You can also export as WebP, which is typically much smaller than GIF at similar quality." }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the difference between GIF, WebP and MP4 loops?",
+              "acceptedAnswer": { "@type": "Answer", "text": "GIF works everywhere but has large files and 256 colors. Animated WebP is much smaller with better color. An MP4 loop is the smallest and highest quality but is a video file, not an image." }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I add text or captions to my GIF?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes. Use the Meme Captions section to add text before exporting." }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I reverse a GIF or make it boomerang?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes. Enable Reverse Playback or Boomerang Loop in the Speed & Loop Effects section, and adjust speed from 0.5x to 2.0x." }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -110,7 +183,7 @@
             <div class="w-7 h-7 bg-white text-black rounded-lg flex items-center justify-center font-bold text-sm tracking-tighter">
                 GIF
             </div>
-            <h1 class="text-sm font-semibold tracking-wider uppercase text-white">Video to GIF Studio</h1>
+            <h1 class="text-sm font-semibold tracking-wider uppercase text-white">Video to GIF Converter</h1>
         </div>
 
         <div class="flex items-center space-x-3 text-xs text-mono-muted font-mono">
@@ -330,6 +403,117 @@
                 </div>
 
             </div>
+
+        <!-- SEO & GEO STATIC CONTENT SECTION FOR CRAWLERS & USERS -->
+        <div class="mt-16 border-t border-mono-cardBorder pt-12 space-y-10 max-w-4xl mx-auto text-mono-muted text-sm">
+            
+            <section id="about" class="mono-card rounded-2xl p-6 space-y-3">
+                <h2 class="text-lg font-semibold text-white tracking-tight">What is Video to GIF Studio?</h2>
+                <p class="leading-relaxed">Video to GIF Studio is a free online tool that converts MP4, MOV, AVI and WEBM videos into GIF, WebP or MP4 loops. You can trim the clip, add meme captions, change playback speed, and control file size with five quality levels or a target size cap.</p>
+            </section>
+
+            <section id="how-to" class="mono-card rounded-2xl p-6 space-y-4">
+                <h2 class="text-lg font-semibold text-white tracking-tight">How to convert a video to GIF</h2>
+                <ol class="list-decimal list-inside space-y-2 leading-relaxed text-neutral-300">
+                    <li>Upload a video (MP4, MOV, AVI or WEBM, up to 100MB) or click Try Sample Video.</li>
+                    <li>Press <kbd class="bg-mono-cardBorder text-white px-1.5 py-0.5 rounded font-mono text-xs">[</kbd> and <kbd class="bg-mono-cardBorder text-white px-1.5 py-0.5 rounded font-mono text-xs">]</kbd> to set the start and end of your clip.</li>
+                    <li>Pick a quality level from 1 (smallest file) to 5 (best quality).</li>
+                    <li>Optionally add captions, change speed, or enable Boomerang or Reverse.</li>
+                    <li>Choose GIF, WebP or MP4, click Render &amp; Export, then download.</li>
+                </ol>
+            </section>
+
+            <section id="quality-levels" class="mono-card rounded-2xl p-6 space-y-4">
+                <h2 class="text-lg font-semibold text-white tracking-tight">Quality levels explained</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-neutral-300 border-collapse">
+                        <thead>
+                            <tr class="border-b border-mono-cardBorder text-mono-muted uppercase tracking-wider">
+                                <th class="py-2.5 px-3">Level</th>
+                                <th class="py-2.5 px-3">Best for</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-mono-cardBorder/50">
+                            <tr><td class="py-2.5 px-3 font-semibold text-white">1 – Smallest</td><td class="py-2.5 px-3">Chat apps and strict upload limits</td></tr>
+                            <tr><td class="py-2.5 px-3 font-semibold text-white">3 – Balanced (480px, 15 FPS, 192 colors)</td><td class="py-2.5 px-3">General use, social posts</td></tr>
+                            <tr><td class="py-2.5 px-3 font-semibold text-white">5 – Max quality</td><td class="py-2.5 px-3">Detailed clips, presentations</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="formats" class="mono-card rounded-2xl p-6 space-y-4">
+                <h2 class="text-lg font-semibold text-white tracking-tight">GIF vs WebP vs MP4 loop</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-neutral-300 border-collapse">
+                        <thead>
+                            <tr class="border-b border-mono-cardBorder text-mono-muted uppercase tracking-wider">
+                                <th class="py-2.5 px-3">Format</th>
+                                <th class="py-2.5 px-3">Compatibility</th>
+                                <th class="py-2.5 px-3">File size</th>
+                                <th class="py-2.5 px-3">Quality</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-mono-cardBorder/50">
+                            <tr><td class="py-2.5 px-3 font-semibold text-white">GIF</td><td class="py-2.5 px-3">Universal</td><td class="py-2.5 px-3">Largest</td><td class="py-2.5 px-3">256 colors max</td></tr>
+                            <tr><td class="py-2.5 px-3 font-semibold text-white">WebP</td><td class="py-2.5 px-3">Modern browsers and apps</td><td class="py-2.5 px-3">Much smaller than GIF</td><td class="py-2.5 px-3">Better color</td></tr>
+                            <tr><td class="py-2.5 px-3 font-semibold text-white">MP4 loop</td><td class="py-2.5 px-3">Anywhere video plays</td><td class="py-2.5 px-3">Smallest</td><td class="py-2.5 px-3">Best</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="features" class="mono-card rounded-2xl p-6 space-y-3">
+                <h2 class="text-lg font-semibold text-white tracking-tight">Features</h2>
+                <ul class="list-disc list-inside space-y-1.5 leading-relaxed text-neutral-300">
+                    <li>Clip trimmer with keyboard shortcuts</li>
+                    <li>Meme captions</li>
+                    <li>Speed control (0.5x to 2.0x)</li>
+                    <li>Boomerang loop and reverse playback</li>
+                    <li>Target file size cap</li>
+                    <li>Export to GIF, WebP or MP4</li>
+                </ul>
+            </section>
+
+            <section id="faq" class="mono-card rounded-2xl p-6 space-y-6">
+                <h2 class="text-lg font-semibold text-white tracking-tight">Frequently asked questions</h2>
+
+                <div class="space-y-4 divide-y divide-mono-cardBorder/50">
+                    <div class="pt-3 first:pt-0 space-y-1">
+                        <h3 class="text-sm font-semibold text-white">How do I convert a video to a GIF?</h3>
+                        <p class="leading-relaxed">Upload an MP4, MOV, AVI or WEBM file (up to 100MB), set the in and out points to trim your clip, choose a quality level, then click Render &amp; Export and download your GIF.</p>
+                    </div>
+
+                    <div class="pt-3 space-y-1">
+                        <h3 class="text-sm font-semibold text-white">What video formats can I convert to GIF?</h3>
+                        <p class="leading-relaxed">Video to GIF Studio accepts MP4, MOV, AVI and WEBM files up to 100MB.</p>
+                    </div>
+
+                    <div class="pt-3 space-y-1">
+                        <h3 class="text-sm font-semibold text-white">How do I make a GIF file smaller?</h3>
+                        <p class="leading-relaxed">Lower the quality level (Level 1 is smallest), shorten the clip with the trimmer, or set a target size cap. You can also export as WebP, which is typically much smaller than GIF at similar quality.</p>
+                    </div>
+
+                    <div class="pt-3 space-y-1">
+                        <h3 class="text-sm font-semibold text-white">What is the difference between GIF, WebP and MP4 loops?</h3>
+                        <p class="leading-relaxed">GIF works everywhere but has large files and 256 colors. Animated WebP is much smaller with better color. An MP4 loop is the smallest and highest quality but is a video file, not an image.</p>
+                    </div>
+
+                    <div class="pt-3 space-y-1">
+                        <h3 class="text-sm font-semibold text-white">Can I add text or captions to my GIF?</h3>
+                        <p class="leading-relaxed">Yes. Use the Meme Captions section to add text before exporting.</p>
+                    </div>
+
+                    <div class="pt-3 space-y-1">
+                        <h3 class="text-sm font-semibold text-white">Can I reverse a GIF or make it boomerang?</h3>
+                        <p class="leading-relaxed">Yes. Enable Reverse Playback or Boomerang Loop in the Speed &amp; Loop Effects section, and adjust speed from 0.5x to 2.0x.</p>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="text-center py-6 text-xs text-mono-muted border-t border-mono-cardBorder">
+                <p>Built by Ashil. Last updated: 2026-10-09.</p>
+            </footer>
 
         </div>
 

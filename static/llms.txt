@@ -1,0 +1,18 @@
+# Video to GIF Studio
+
+> Free online tool that converts MP4, MOV, AVI and WEBM videos to GIF, WebP or MP4 loops. Includes clip trimming, meme captions, speed control, boomerang/reverse effects, 5 quality levels and an optional target file size cap. Max upload 100MB.
+
+## Key facts
+- Input formats: MP4, MOV, AVI, WEBM
+- Output formats: GIF, WebP, MP4 loop
+- Balanced preset (Level 3): 480px, 15 FPS, 192 colors
+- Speed range: 0.5x to 2.0x
+
+## Pages
+- [Converter](https://clips2gif.onrender.com/): the tool, how-to steps, format comparison and FAQ
+- [MP4 to GIF](https://clips2gif.onrender.com/mp4-to-gif): Convert MP4 videos to GIF
+- [MOV to GIF](https://clips2gif.onrender.com/mov-to-gif): Convert Apple MOV videos to GIF
+- [WEBM to GIF](https://clips2gif.onrender.com/webm-to-gif): Convert WebM video clips to GIF
+- [Compress GIF](https://clips2gif.onrender.com/compress-gif): Reduce GIF file size with target MB limits
+- [Reverse GIF](https://clips2gif.onrender.com/reverse-gif): Create boomerang and reverse GIF loops
+- [Add Text to GIF](https://clips2gif.onrender.com/add-text-to-gif): Make meme GIFs with top/bottom captions
